@@ -1,6 +1,21 @@
 <h1>KelloggCoin Ledger</h1>
 
 <!-- Step 1: List all transaction, starting with the ICO -->
+<!-- It seems that you can shorten or add certain elements with .xxxx -->
+
+<ol>
+  <% for transaction in Transaction.all %>
+    <li>
+      <% if transaction.from_user %>
+      <!-- Above is an example, in the schema file it shows from_user_id, but you don't need id -->
+        <%= transaction.amount %> from <%= transaction.from_user.name %> to <%= transaction.to_user.name %>
+        <!-- Above is an example, it first is shortened, then knows to connect id's with name -->
+      <% else %>
+        Initial coin offering: <%= transaction.amount %> to <%= transaction.to_user.name %>
+      <% end %>
+    </li>
+  <% end %>
+</ol>
 
 <!-- Step 2: Calculate and display the balances -->
 
@@ -12,3 +27,14 @@ Balance for Evan: 1164 KC
 Balance for Anthony: 1456 KC
 Balance for Krystina: 3516 KC 
 -->
+
+<ul>
+  <% for user in User.all %>
+    <% 
+      balance = 0
+      balance = balance + Transaction.where({ to_user_id: user.id }).sum(:amount)
+      balance = balance - Transaction.where({ from_user_id: user.id }).sum(:amount)
+    %>
+    <li>Balance for <%= user.name %>: <%= balance %> KC</li>
+  <% end %>
+</ul>
